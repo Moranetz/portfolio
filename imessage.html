@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>melmarion — Messages</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-dark: #0a0a0f;
+    --phone-black: #000000;
+    --nav-bg: rgba(28, 28, 30, 0.92);
+    --blue-bubble: #0b84fe;
+    --gray-bubble: #26252a;
+    --separator: rgba(255,255,255,0.08);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255,255,255,0.55);
+    --text-tertiary: rgba(255,255,255,0.35);
+    --search-bg: rgba(118,118,128,0.24);
+    --unread-blue: #0b84fe;
+    --bubble-radius: 18px;
+  }
+
+  body {
+    background: var(--bg-dark);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', system-ui, 'Outfit', sans-serif;
+    color: var(--text-primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Phone Frame */
+  .phone {
+    width: 390px;
+    height: 844px;
+    background: var(--phone-black);
+    border-radius: 44px;
+    position: relative;
+    overflow: hidden;
+    border: 2px solid rgba(255,255,255,0.08);
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.04),
+      0 40px 80px rgba(0,0,0,0.6),
+      0 0 120px rgba(11,132,254,0.06);
+  }
+
+  /* Dynamic Island */
+  .dynamic-island {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 126px;
+    height: 36px;
+    background: #000;
+    border-radius: 20px;
+    z-index: 100;
+  }
+
+  /* Status Bar */
+  .status-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 54px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    padding: 0 28px 4px;
+    z-index: 90;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .status-bar .time { font-variant-numeric: tabular-nums; }
+  .status-bar .icons { display: flex; gap: 5px; align-items: center; }
+  .status-bar .icons svg { width: 18px; height: 12px; fill: #fff; }
+
+  /* Screens Container */
+  .screens {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 200%;
+    height: 100%;
+    display: flex;
+    transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1);
+  }
+  .screens.show-conversation { transform: translateX(-50%); }
+
+  .screen {
+    width: 50%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* ====== LIST SCREEN ====== */
+  .list-screen {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .list-nav {
+    padding-top: 58px;
+    padding-bottom: 0;
+    background: var(--phone-black);
+    position: relative;
+    z-index: 10;
+    flex-shrink: 0;
+  }
+
+  .list-nav-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 16px 2px;
+  }
+
+  .list-nav-top .edit-btn {
+    font-size: 17px;
+    color: var(--blue-bubble);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  .list-nav-top .compose-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  .list-nav-top .compose-btn svg { fill: var(--blue-bubble); }
+
+  .list-title {
+    font-size: 34px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    padding: 2px 16px 8px;
+  }
+
+  .search-bar {
+    margin: 0 16px 8px;
+    background: var(--search-bg);
+    border-radius: 10px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .search-bar svg { width: 16px; height: 16px; fill: var(--text-secondary); flex-shrink: 0; }
+  .search-bar span {
+    font-size: 17px;
+    color: var(--text-secondary);
+    letter-spacing: -0.2px;
+  }
+
+  /* Thread List */
+  .thread-list {
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .thread-list::-webkit-scrollbar { display: none; }
+
+  .thread {
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.15s;
+  }
+  .thread:active { background: rgba(255,255,255,0.06); }
+  .thread::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 80px;
+    right: 0;
+    height: 0.5px;
+    background: var(--separator);
+  }
+  .thread:last-child::after { display: none; }
+
+  .thread .unread-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--unread-blue);
+    flex-shrink: 0;
+    margin-right: 8px;
+    opacity: 0;
+  }
+  .thread .unread-dot.visible { opacity: 1; }
+
+  .thread .avatar {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 600;
+    color: #fff;
+    flex-shrink: 0;
+    margin-right: 12px;
+  }
+
+  .thread .thread-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .thread .thread-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 3px;
+  }
+
+  .thread .thread-name {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+  }
+
+  .thread .thread-time {
+    font-size: 15px;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+    margin-left: 8px;
+  }
+
+  .thread .thread-preview {
+    font-size: 15px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.35;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .thread .chevron {
+    width: 8px;
+    height: 14px;
+    flex-shrink: 0;
+    margin-left: 4px;
+    fill: rgba(255,255,255,0.25);
+  }
+
+  /* ====== CONVERSATION SCREEN ====== */
+  .convo-screen {
+    display: flex;
+    flex-direction: column;
+    background: var(--phone-black);
+  }
+
+  .convo-nav {
+    padding-top: 54px;
+    background: var(--nav-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 0.5px solid var(--separator);
+    flex-shrink: 0;
+    z-index: 10;
+  }
+
+  .convo-nav-inner {
+    display: flex;
+    align-items: center;
+    padding: 6px 8px 8px;
+    position: relative;
+  }
+
+  .back-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    color: var(--blue-bubble);
+    font-size: 17px;
+    font-family: inherit;
+    cursor: pointer;
+    padding: 4px 0;
+    flex-shrink: 0;
+  }
+  .back-btn svg { width: 12px; height: 20px; fill: var(--blue-bubble); }
+
+  .convo-contact {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .convo-contact .avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .convo-contact .convo-name {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-secondary);
+  }
+
+  /* Messages Area */
+  .messages-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 10px 20px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .messages-area::-webkit-scrollbar { display: none; }
+
+  .msg-timestamp {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin: 16px 0 10px;
+    font-weight: 500;
+  }
+
+  .msg-group {
+    margin-bottom: 2px;
+  }
+
+  .bubble {
+    max-width: 265px;
+    padding: 8px 14px;
+    font-size: 17px;
+    line-height: 1.35;
+    letter-spacing: -0.2px;
+    margin-bottom: 2px;
+    position: relative;
+    word-wrap: break-word;
+  }
+
+  .bubble.sent {
+    background: var(--blue-bubble);
+    color: #fff;
+    margin-left: auto;
+    border-radius: var(--bubble-radius) var(--bubble-radius) 6px var(--bubble-radius);
+  }
+  .bubble.sent.first { border-radius: var(--bubble-radius) var(--bubble-radius) 6px var(--bubble-radius); }
+  .bubble.sent.last {
+    border-radius: var(--bubble-radius) var(--bubble-radius) 6px var(--bubble-radius);
+    margin-bottom: 8px;
+  }
+  .bubble.sent.tail {
+    border-radius: var(--bubble-radius) var(--bubble-radius) 4px var(--bubble-radius);
+    margin-bottom: 8px;
+  }
+  .bubble.sent.tail::after {
+    content: '';
+    position: absolute;
+    right: -6px;
+    bottom: 0;
+    width: 12px;
+    height: 16px;
+    background: radial-gradient(ellipse at top right, transparent 60%, var(--blue-bubble) 60%);
+  }
+
+  .bubble.received {
+    background: var(--gray-bubble);
+    color: #fff;
+    margin-right: auto;
+    border-radius: var(--bubble-radius) var(--bubble-radius) var(--bubble-radius) 6px;
+  }
+  .bubble.received.tail {
+    border-radius: var(--bubble-radius) var(--bubble-radius) var(--bubble-radius) 4px;
+    margin-bottom: 8px;
+  }
+  .bubble.received.tail::after {
+    content: '';
+    position: absolute;
+    left: -6px;
+    bottom: 0;
+    width: 12px;
+    height: 16px;
+    background: radial-gradient(ellipse at top left, transparent 60%, var(--gray-bubble) 60%);
+  }
+
+  .bubble a {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .delivery-status {
+    text-align: right;
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+    margin-bottom: 10px;
+    padding-right: 4px;
+    font-weight: 500;
+  }
+
+  /* Typing Indicator */
+  .typing-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-top: 4px;
+    margin-bottom: 8px;
+  }
+  .typing-bubble {
+    background: var(--gray-bubble);
+    border-radius: var(--bubble-radius) var(--bubble-radius) var(--bubble-radius) 4px;
+    padding: 12px 16px;
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    position: relative;
+  }
+  .typing-bubble::after {
+    content: '';
+    position: absolute;
+    left: -6px;
+    bottom: 0;
+    width: 12px;
+    height: 16px;
+    background: radial-gradient(ellipse at top left, transparent 60%, var(--gray-bubble) 60%);
+  }
+  .typing-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.4);
+    animation: typingBounce 1.4s infinite ease-in-out;
+  }
+  .typing-dot:nth-child(1) { animation-delay: 0s; }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes typingBounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-4px); opacity: 1; }
+  }
+
+  /* Home Indicator */
+  .home-indicator {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 134px;
+    height: 5px;
+    background: rgba(255,255,255,0.25);
+    border-radius: 3px;
+    z-index: 100;
+  }
+
+  /* Responsive */
+  @media (max-height: 900px) {
+    .phone { height: 95vh; }
+  }
+  @media (max-width: 420px) {
+    .phone { width: 100vw; height: 100vh; border-radius: 0; border: none; }
+    .dynamic-island { display: none; }
+    body { align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="dynamic-island"></div>
+
+  <div class="status-bar">
+    <span class="time">9:41</span>
+    <div class="icons">
+      <svg viewBox="0 0 18 12"><path d="M1 4.2C2.8 2 5.2.8 8 .8s5.2 1.2 7 3.4c.3.4.3.9 0 1.2C13.2 7.6 10.8 8.8 8 8.8S2.8 7.6 1 5.4c-.3-.3-.3-.8 0-1.2z" fill="none" stroke="#fff" stroke-width="1.2"/><circle cx="8" cy="4.8" r="2"/></svg>
+      <svg viewBox="0 0 16 12"><rect x="0" y="3" width="3" height="9" rx="0.5" fill="#fff" opacity="0.4"/><rect x="4.5" y="2" width="3" height="10" rx="0.5" fill="#fff" opacity="0.6"/><rect x="9" y="0.5" width="3" height="11.5" rx="0.5" fill="#fff" opacity="0.8"/><rect x="13.5" y="0" width="3" height="12" rx="0.5" fill="#fff"/></svg>
+      <svg viewBox="0 0 27 12"><rect x="0" y="1" width="22" height="10" rx="2" stroke="#fff" stroke-width="1" fill="none" opacity="0.35"/><rect x="23" y="3.5" width="2" height="5" rx="1" fill="#fff" opacity="0.35"/><rect x="1.5" y="2.5" width="18" height="7" rx="1" fill="#fff"/></svg>
+    </div>
+  </div>
+
+  <div class="screens" id="screens">
+
+    <!-- LIST SCREEN -->
+    <div class="screen list-screen">
+      <div class="list-nav">
+        <div class="list-nav-top">
+          <button class="edit-btn">Edit</button>
+          <button class="compose-btn">
+            <svg viewBox="0 0 24 24" width="24" height="24"><path d="M3.5 20.5l1.5-5.5L17.5 2.5c.8-.8 2-.8 2.8 0l1.2 1.2c.8.8.8 2 0 2.8L9 19l-5.5 1.5z" fill="none" stroke="#0b84fe" stroke-width="1.8" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div class="list-title">Messages</div>
+        <div class="search-bar">
+          <svg viewBox="0 0 16 16"><circle cx="6.5" cy="6.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5"/><line x1="10.5" y1="10.5" x2="15" y2="15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          <span>Search</span>
+        </div>
+      </div>
+
+      <div class="thread-list" id="threadList">
+        <!-- Threads generated by JS -->
+      </div>
+    </div>
+
+    <!-- CONVERSATION SCREEN -->
+    <div class="screen convo-screen" id="convoScreen">
+      <div class="convo-nav">
+        <div class="convo-nav-inner">
+          <button class="back-btn" id="backBtn">
+            <svg viewBox="0 0 12 20"><polyline points="10,2 2,10 10,18" fill="none" stroke="#0b84fe" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Messages
+          </button>
+          <div class="convo-contact" id="convoContact">
+            <div class="avatar" id="convoAvatar"></div>
+            <div class="convo-name" id="convoName"></div>
+          </div>
+        </div>
+      </div>
+      <div class="messages-area" id="messagesArea"></div>
+    </div>
+  </div>
+
+  <div class="home-indicator"></div>
+</div>
+
+<script>
+const threads = [
+  {
+    name: "Signify",
+    color: "#5e5ce6",
+    preview: "Just shipped 50 signs with Duolingo-grade...",
+    time: "2024",
+    unread: true,
+    messages: [
+      { type: "timestamp", text: "Today 2:34 PM" },
+      { type: "received", text: "What are you working on?" },
+      { type: "sent", text: "An ASL learning app." },
+      { type: "sent", text: "But not like the boring ones." },
+      { type: "received", text: "What makes it different?" },
+      { type: "sent", text: "Casino-grade engagement mechanics. Variable rewards. Streaks. Hearts. The whole Duolingo playbook." },
+      { type: "received", text: "That sounds... manipulative?" },
+      { type: "sent", text: "It's the same psychology that makes you check Instagram 47 times a day. Except this time you learn sign language." },
+      { type: "received", text: "...okay that's actually clever" },
+      { type: "sent", text: "50 signs. 10 units. Zero external dependencies. Every hand shape drawn in SwiftUI Canvas." },
+      { type: "sent", text: "github.com/nicktesla/sign-language-app", link: true },
+      { type: "delivered" }
+    ]
+  },
+  {
+    name: "Read the Room",
+    color: "#ff375f",
+    preview: "14 NPCs. 40+ techniques. They won't see...",
+    time: "2024",
+    unread: true,
+    messages: [
+      { type: "timestamp", text: "Today 1:12 PM" },
+      { type: "received", text: "Another social skills app?" },
+      { type: "sent", text: "No. An influence simulator." },
+      { type: "sent", text: "You text NPCs. They have real personalities. Your job is to get what you want without them knowing." },
+      { type: "received", text: "That sounds like manipulation training" },
+      { type: "sent", text: "It IS manipulation training. 40+ techniques from Robert Cialdini, Chris Voss, Dale Carnegie. Framing, anchoring, mirroring, the works." },
+      { type: "received", text: "Why would someone need that?" },
+      { type: "sent", text: "Every negotiation. Every job interview. Every time you need a refund. You're already being influenced. Might as well understand how." },
+      { type: "sent", text: "14 NPCs across scenarios. Car dealer. Landlord. Coworker stealing credit. Each one requires a different playbook." },
+      { type: "received", text: "How does it actually work?" },
+      { type: "sent", text: "Looks like iMessage. You type naturally. The AI scores your technique in real-time. Green ring fills up as you land persuasion moves." },
+      { type: "sent", text: "It feels like texting a friend. Except you're sharpening a weapon." },
+      { type: "delivered" }
+    ]
+  },
+  {
+    name: "Forecast",
+    color: "#30d158",
+    preview: "It looks like rain but that's not what I...",
+    time: "2024",
+    unread: false,
+    messages: [
+      { type: "timestamp", text: "Yesterday 6:48 PM" },
+      { type: "received", text: "A weather app? Seriously?" },
+      { type: "sent", text: "It's not a weather app." },
+      { type: "sent", text: "It tracks your cycle and maps hormonal phases to behavioral patterns. The weather is a metaphor." },
+      { type: "received", text: "Wait. So \"storm warning\" means..." },
+      { type: "sent", text: "Luteal phase. Energy drops. Irritability spikes. The app tells you WHY you feel off before you spiral about it." },
+      { type: "received", text: "Why disguise it as weather?" },
+      { type: "sent", text: "Because nobody wants \"PERIOD TRACKER\" lighting up their Lock Screen during a meeting. Forecast just looks like you're checking if it'll rain." },
+      { type: "received", text: "That's actually thoughtful" },
+      { type: "sent", text: "Each phase gets real predictions. Follicular = high energy, plan your hard conversations. Ovulatory = you're magnetic, use it. Luteal = cancel plans, protect your peace." },
+      { type: "sent", text: "Hormone intelligence, not hormone tracking." },
+      { type: "read" }
+    ]
+  },
+  {
+    name: "Wild Hearts",
+    color: "#ff9f0a",
+    preview: "The creatures follow you now. Breeding...",
+    time: "2024",
+    unread: true,
+    messages: [
+      { type: "timestamp", text: "Today 11:03 AM" },
+      { type: "received", text: "What kind of game is this?" },
+      { type: "sent", text: "A creature world. Zero imported assets. Every animal, every plant, every terrain tile — drawn with Core Graphics at runtime." },
+      { type: "received", text: "Why would you do that to yourself?" },
+      { type: "sent", text: "Because I wanted to prove a game can look beautiful with math alone. No sprite sheets. No asset pipeline. Just bezier curves and gradients." },
+      { type: "received", text: "What do you actually do in it?" },
+      { type: "sent", text: "Explore procedurally generated ecosystems. Discover creatures. Breed them. Watch genetics play out across generations." },
+      { type: "sent", text: "A butterfly and a fox can produce something that's never existed before. Every combination is unique." },
+      { type: "received", text: "How does the rendering work at 60fps?" },
+      { type: "sent", text: "CADisplayLink + Core Graphics. No SpriteKit, no Unity, no shortcuts. I hand-optimized every draw call." },
+      { type: "sent", text: "It runs at 120fps on ProMotion displays. Smoother than most shipped games." },
+      { type: "delivered" }
+    ]
+  },
+  {
+    name: "ClearFrame",
+    color: "#64d2ff",
+    preview: "Both sides have a point. Here's what the...",
+    time: "2024",
+    unread: false,
+    messages: [
+      { type: "timestamp", text: "Mon 4:22 PM" },
+      { type: "received", text: "Another news app?" },
+      { type: "sent", text: "No. A bias detector." },
+      { type: "sent", text: "Paste any headline or article. ClearFrame tells you what rhetorical techniques are being used, then steelmans both sides." },
+      { type: "received", text: "Steelmans?" },
+      { type: "sent", text: "Makes the strongest possible version of each argument. Not strawman garbage — the BEST case for each position, written by someone who actually understands it." },
+      { type: "received", text: "Doesn't that just create false equivalence?" },
+      { type: "sent", text: "No. It explicitly flags when evidence is asymmetric. \"Side A has 12 peer-reviewed studies. Side B has a blog post.\" It's honest about the weight." },
+      { type: "sent", text: "But it still makes you hear the best version of the argument you disagree with. That's the part people skip." },
+      { type: "received", text: "What techniques does it detect?" },
+      { type: "sent", text: "Framing, anchoring, emotional loading, cherry-picking, appeal to authority, false dichotomy. About 20 patterns total. Each one highlighted inline with an explanation." },
+      { type: "sent", text: "You'll never read the news the same way again." },
+      { type: "read" }
+    ]
+  },
+  {
+    name: "PostBridge",
+    color: "#bf5af2",
+    preview: "50 tools connected. The MCP server is...",
+    time: "2024",
+    unread: false,
+    messages: [
+      { type: "timestamp", text: "Sun 9:15 AM" },
+      { type: "received", text: "What's PostBridge?" },
+      { type: "sent", text: "MCP infrastructure. It connects AI agents to 50+ real-world tools through a single protocol server." },
+      { type: "received", text: "MCP?" },
+      { type: "sent", text: "Model Context Protocol. It's how AI models talk to external services. Think of it as USB-C for AI — one standard plug, everything connects." },
+      { type: "received", text: "What kind of tools?" },
+      { type: "sent", text: "Databases. APIs. File systems. Cloud services. Email. Calendar. CRMs. Basically anything an AI agent might need to actually DO something instead of just talk about it." },
+      { type: "received", text: "Why build this?" },
+      { type: "sent", text: "Because right now every AI tool reinvents the wheel. Everyone writes their own Slack integration, their own Google Drive connector. PostBridge is the shared layer." },
+      { type: "sent", text: "One server. 50 tools. Any AI model can plug in and immediately act on the real world." },
+      { type: "received", text: "Is this production-ready?" },
+      { type: "sent", text: "Running in production right now. Sub-200ms tool calls. Handles auth, rate limiting, retry logic, the boring stuff that breaks at 3am." },
+      { type: "sent", text: "The boring infrastructure nobody sees is the reason everything else works." },
+      { type: "delivered" }
+    ]
+  }
+];
+
+// Render thread list
+const threadList = document.getElementById('threadList');
+threads.forEach((t, i) => {
+  const el = document.createElement('div');
+  el.className = 'thread';
+  el.onclick = () => openConversation(i);
+  el.innerHTML = `
+    <div class="unread-dot ${t.unread ? 'visible' : ''}"></div>
+    <div class="avatar" style="background:${t.color}">${t.name[0]}</div>
+    <div class="thread-content">
+      <div class="thread-top">
+        <span class="thread-name">${t.name}</span>
+        <span class="thread-time">${t.time}</span>
+      </div>
+      <div class="thread-preview">${t.preview}</div>
+    </div>
+    <svg class="chevron" viewBox="0 0 8 14"><polyline points="1,1 7,7 1,13" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  `;
+  threadList.appendChild(el);
+});
+
+function openConversation(index) {
+  const t = threads[index];
+  document.getElementById('convoAvatar').style.background = t.color;
+  document.getElementById('convoAvatar').textContent = t.name[0];
+  document.getElementById('convoName').textContent = t.name;
+
+  const area = document.getElementById('messagesArea');
+  area.innerHTML = '';
+
+  t.messages.forEach((m, mi) => {
+    if (m.type === 'timestamp') {
+      const ts = document.createElement('div');
+      ts.className = 'msg-timestamp';
+      ts.textContent = m.text;
+      area.appendChild(ts);
+      return;
+    }
+    if (m.type === 'delivered') {
+      const d = document.createElement('div');
+      d.className = 'delivery-status';
+      d.textContent = 'Delivered';
+      area.appendChild(d);
+      return;
+    }
+    if (m.type === 'read') {
+      const d = document.createElement('div');
+      d.className = 'delivery-status';
+      d.textContent = 'Read 8:42 PM';
+      area.appendChild(d);
+      return;
+    }
+
+    const bubble = document.createElement('div');
+    bubble.className = `bubble ${m.type}`;
+
+    // Determine if this is the last bubble before a type change
+    const next = t.messages[mi + 1];
+    const isLast = !next || next.type !== m.type || next.type === 'timestamp' || next.type === 'delivered' || next.type === 'read';
+
+    if (isLast) {
+      bubble.classList.add('tail');
+    }
+
+    if (m.link) {
+      bubble.innerHTML = `<a href="https://${m.text}" target="_blank" rel="noopener">${m.text}</a>`;
+    } else {
+      bubble.textContent = m.text;
+    }
+
+    area.appendChild(bubble);
+  });
+
+  // Add typing indicator
+  const typing = document.createElement('div');
+  typing.className = 'typing-indicator';
+  typing.innerHTML = `
+    <div class="typing-bubble">
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+    </div>
+  `;
+  area.appendChild(typing);
+
+  document.getElementById('screens').classList.add('show-conversation');
+
+  requestAnimationFrame(() => {
+    area.scrollTop = area.scrollHeight;
+  });
+}
+
+document.getElementById('backBtn').addEventListener('click', () => {
+  document.getElementById('screens').classList.remove('show-conversation');
+});
+</script>
+
+</body>
+</html>

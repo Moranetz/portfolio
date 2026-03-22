@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>melmarion pharmacy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=JetBrains+Mono:wght@400;600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #0a0a0f;
+  color: #e0e0e0;
+  font-family: 'Outfit', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ambient top light */
+body::before {
+  content: '';
+  position: fixed;
+  top: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80%;
+  height: 350px;
+  background: radial-gradient(ellipse at center, rgba(255,255,255,0.06) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+header {
+  text-align: center;
+  padding: 60px 20px 40px;
+  position: relative;
+  z-index: 1;
+}
+
+header h1 {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+header .subtitle {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: clamp(0.7rem, 1.8vw, 0.85rem);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  margin-bottom: 14px;
+}
+
+header .tagline {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 300;
+  font-size: clamp(0.85rem, 2vw, 1.05rem);
+  color: rgba(255,255,255,0.3);
+  font-style: italic;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 50px 36px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 30px 30px 80px;
+  position: relative;
+  z-index: 1;
+}
+
+@media (max-width: 900px) {
+  .grid { grid-template-columns: repeat(2, 1fr); gap: 44px 28px; }
+}
+@media (max-width: 560px) {
+  .grid { grid-template-columns: 1fr; max-width: 320px; gap: 48px; }
+}
+
+/* ── bottle wrapper ── */
+.bottle-wrap {
+  display: flex;
+  justify-content: center;
+  perspective: 800px;
+  opacity: 0;
+  animation: bottleIn 0.6s ease-out forwards;
+}
+.bottle-wrap:nth-child(1) { animation-delay: 0.1s; }
+.bottle-wrap:nth-child(2) { animation-delay: 0.2s; }
+.bottle-wrap:nth-child(3) { animation-delay: 0.3s; }
+.bottle-wrap:nth-child(4) { animation-delay: 0.4s; }
+.bottle-wrap:nth-child(5) { animation-delay: 0.5s; }
+.bottle-wrap:nth-child(6) { animation-delay: 0.6s; }
+
+@keyframes bottleIn {
+  from { opacity: 0; transform: translateY(30px) scale(0.95); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ── bottle container (clickable) ── */
+.bottle {
+  --glow: #8b6cff;
+  position: relative;
+  width: 210px;
+  cursor: pointer;
+  transition: transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94), filter 0.4s ease;
+}
+
+.bottle:hover {
+  transform: translateY(-10px) rotate(0deg) !important;
+  filter: drop-shadow(0 8px 25px var(--glow-alpha, rgba(139,108,255,0.35)));
+}
+
+/* ── cap ── */
+.cap {
+  width: 62%;
+  height: 38px;
+  margin: 0 auto;
+  background: linear-gradient(180deg, #7a5520 0%, #5a3a10 40%, #6b4818 100%);
+  border-radius: 6px 6px 0 0;
+  position: relative;
+  z-index: 2;
+  /* child-proof ridges */
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 5px,
+      rgba(0,0,0,0.15) 5px,
+      rgba(0,0,0,0.15) 6px
+    );
+  box-shadow:
+    inset 0 2px 3px rgba(255,255,255,0.12),
+    0 -1px 3px rgba(0,0,0,0.4);
+}
+
+.cap::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 60%;
+  bottom: 4px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+  border-radius: 3px 0 0 3px;
+}
+
+/* ── body ── */
+.body {
+  width: 100%;
+  aspect-ratio: 0.55;
+  background: linear-gradient(
+    90deg,
+    rgba(120,75,20,0.92) 0%,
+    rgba(180,120,40,0.85) 25%,
+    rgba(200,140,50,0.82) 50%,
+    rgba(180,120,40,0.85) 75%,
+    rgba(120,75,20,0.92) 100%
+  );
+  border-radius: 8px 8px 12px 12px;
+  position: relative;
+  box-shadow:
+    inset 3px 0 12px rgba(255,255,255,0.05),
+    inset -4px 0 12px rgba(0,0,0,0.3),
+    inset 0 -6px 15px rgba(0,0,0,0.35),
+    0 12px 30px rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* glass sheen */
+.body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 8%;
+  width: 18%;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.03) 40%, transparent 70%);
+  border-radius: 8px 0 0 12px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* liquid gradient at bottom */
+.body::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 30%;
+  background: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.15) 100%);
+  border-radius: 0 0 12px 12px;
+  pointer-events: none;
+}
+
+/* ── label ── */
+.label {
+  width: 82%;
+  background: #f8f6f0;
+  border-radius: 4px;
+  padding: 14px 12px 12px;
+  position: relative;
+  z-index: 2;
+  box-shadow:
+    0 1px 3px rgba(0,0,0,0.15),
+    inset 0 0 0 1px rgba(0,0,0,0.06);
+  transition: transform 0.5s ease, opacity 0.3s ease;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+}
+
+/* ── label front content ── */
+.label .pharmacy {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  font-weight: 600;
+  color: #333;
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.label .pharmacy .rx-symbol {
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.label .divider {
+  height: 1px;
+  background: #333;
+  margin: 6px 0;
+}
+
+.label .chem-name {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: 1rem;
+  color: #111;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+.label .project-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  color: #666;
+  margin-top: 2px;
+}
+
+.label .description {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.55rem;
+  font-weight: 400;
+  color: #444;
+  line-height: 1.45;
+  margin-top: 8px;
+}
+
+.label .rx-info {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.48rem;
+  color: #555;
+  margin-top: 8px;
+  line-height: 1.6;
+}
+
+.label .tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.label .tag {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.45rem;
+  background: #e8e6e0;
+  color: #555;
+  padding: 2px 6px;
+  border-radius: 2px;
+  letter-spacing: 0.02em;
+}
+
+/* ── back of label (github link) ── */
+.label-back {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: #f8f6f0;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  z-index: 2;
+  backface-visibility: hidden;
+  transform: rotateY(180deg);
+  padding: 16px;
+}
+
+.label-back .chem-back {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: 0.85rem;
+  color: #111;
+  text-transform: uppercase;
+}
+
+.label-back a {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  color: #fff;
+  background: #111;
+  padding: 8px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  letter-spacing: 0.03em;
+  transition: background 0.2s ease;
+}
+
+.label-back a:hover {
+  background: #333;
+}
+
+.label-back .hint {
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.5rem;
+  color: #999;
+}
+
+/* flipped state */
+.bottle.flipped .label-inner {
+  transform: rotateY(180deg);
+}
+
+.label-inner {
+  width: 100%;
+  position: relative;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-style: preserve-3d;
+}
+
+.label-front {
+  backface-visibility: hidden;
+}
+
+.label-back {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  backface-visibility: hidden;
+  transform: rotateY(180deg);
+}
+
+/* ── surface shadow ── */
+.surface-shadow {
+  width: 85%;
+  height: 12px;
+  margin: 0 auto;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.45) 0%, transparent 70%);
+  border-radius: 50%;
+  transition: opacity 0.4s ease;
+}
+
+.bottle:hover + .surface-shadow,
+.bottle:hover ~ .surface-shadow {
+  opacity: 0.4;
+}
+
+/* ── hover glow colors ── */
+.bottle[data-chem="dopamine"]       { --glow: #8b6cff; --glow-alpha: rgba(139,108,255,0.35); }
+.bottle[data-chem="oxytocin"]       { --glow: #ec4899; --glow-alpha: rgba(236,72,153,0.35); }
+.bottle[data-chem="vasopressin"]    { --glow: #60a5fa; --glow-alpha: rgba(96,165,250,0.35); }
+.bottle[data-chem="serotonin"]      { --glow: #4ade80; --glow-alpha: rgba(74,222,128,0.35); }
+.bottle[data-chem="norepinephrine"] { --glow: #22d3ee; --glow-alpha: rgba(34,211,238,0.35); }
+.bottle[data-chem="endorphin"]      { --glow: #fbbf24; --glow-alpha: rgba(251,191,36,0.35); }
+
+/* ── footer ── */
+footer {
+  text-align: center;
+  padding: 20px 20px 50px;
+  position: relative;
+  z-index: 1;
+}
+
+footer p {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.2);
+  letter-spacing: 0.08em;
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>melmarion</h1>
+  <p class="subtitle">pharmacy &mdash; behavioral compounds</p>
+  <p class="tagline">"Serious utility disguised as something engaging"</p>
+</header>
+
+<div class="grid" id="grid">
+  <!-- bottles injected by script -->
+</div>
+
+<footer>
+  <p>caution: may cause compulsive building</p>
+</footer>
+
+<script>
+const projects = [
+  {
+    chem: 'dopamine',
+    chemName: 'DOPAMINE',
+    project: 'Signify',
+    desc: 'The reward loop. Variable ratio reinforcement disguised as language education.',
+    rx: 'SIG-2024',
+    dose: '50 signs / 10 units',
+    refills: '\u221E',
+    url: 'https://github.com/melmarion/sign-language-app',
+    tags: ['SwiftUI', 'Gamification'],
+    rotate: -2
+  },
+  {
+    chem: 'oxytocin',
+    chemName: 'OXYTOCIN',
+    project: 'Read the Room',
+    desc: 'Social bonding agent. Builds trust literacy through simulated conversation.',
+    rx: 'RTR-2024',
+    dose: '14 NPCs / 40+ techniques',
+    refills: '\u221E',
+    url: 'https://github.com/melmarion/read-the-room-ios',
+    tags: ['SwiftUI', 'Claude AI'],
+    rotate: 1.5
+  },
+  {
+    chem: 'vasopressin',
+    chemName: 'VASOPRESSIN',
+    project: 'Forecast',
+    desc: 'Cycle intelligence compound. Hormone data disguised as atmospheric conditions.',
+    rx: 'FRC-2024',
+    dose: 'Daily / Cycle-synced',
+    refills: '\u221E',
+    url: 'https://github.com/melmarion/forecast-ios',
+    tags: ['SwiftUI', 'Health'],
+    rotate: -1
+  },
+  {
+    chem: 'serotonin',
+    chemName: 'SEROTONIN',
+    project: 'Wild Hearts',
+    desc: 'Mastery stabilizer. The calm satisfaction of nurturing, building, protecting.',
+    rx: 'WH-2024',
+    dose: 'Procedural / Infinite',
+    refills: '\u221E',
+    url: 'https://github.com/melmarion/Wild-Farm',
+    tags: ['CoreGraphics', 'Game'],
+    rotate: 2.5
+  },
+  {
+    chem: 'norepinephrine',
+    chemName: 'NOREPINEPHRINE',
+    project: 'ClearFrame',
+    desc: 'Cognitive sharpener. Heightens critical analysis of information streams.',
+    rx: 'CF-2024',
+    dose: 'Real-time / Per article',
+    refills: '\u221E',
+    url: 'https://github.com/melmarion/ground-news',
+    tags: ['React', 'Chrome Extension'],
+    rotate: -2.5
+  },
+  {
+    chem: 'endorphin',
+    chemName: 'ENDORPHIN',
+    project: 'PostBridge MCP',
+    desc: "Builder's high. The satisfaction of infrastructure that other tools depend on.",
+    rx: 'PB-2024',
+    dose: '50 tools / On demand',
+    refills: '\u221E',
+    url: 'https://github.com/melmarion/post-bridge-mcp',
+    tags: ['Python', 'MCP', 'Claude'],
+    rotate: 1
+  }
+];
+
+const grid = document.getElementById('grid');
+
+projects.forEach(p => {
+  const wrap = document.createElement('div');
+  wrap.className = 'bottle-wrap';
+
+  wrap.innerHTML = `
+    <div>
+      <div class="bottle" data-chem="${p.chem}" style="transform: rotate(${p.rotate}deg);" onclick="this.classList.toggle('flipped')">
+        <div class="cap"></div>
+        <div class="body">
+          <div class="label">
+            <div class="label-inner">
+              <div class="label-front">
+                <div class="pharmacy"><span class="rx-symbol">&#8478;</span> melmarion pharmacy</div>
+                <div class="divider"></div>
+                <div class="chem-name">${p.chemName}</div>
+                <div class="project-name">(${p.project})</div>
+                <div class="description">${p.desc}</div>
+                <div class="rx-info">
+                  Rx# ${p.rx}<br>
+                  Dose: ${p.dose}<br>
+                  Refills: ${p.refills}
+                </div>
+                <div class="tags">
+                  ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
+                </div>
+              </div>
+              <div class="label-back">
+                <div class="chem-back">${p.chemName}</div>
+                <a href="${p.url}" target="_blank" rel="noopener">view source &rarr;</a>
+                <span class="hint">click to flip back</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="surface-shadow"></div>
+    </div>
+  `;
+
+  grid.appendChild(wrap);
+});
+</script>
+
+</body>
+</html>
