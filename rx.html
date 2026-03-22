@@ -111,6 +111,7 @@ header .tagline {
 .bottle-wrap:nth-child(8) { animation-delay: 0.45s; }
 .bottle-wrap:nth-child(9) { animation-delay: 0.5s; }
 .bottle-wrap:nth-child(10) { animation-delay: 0.55s; }
+.bottle-wrap:nth-child(11) { animation-delay: 0.6s; }
 
 @keyframes bottleIn {
   from { opacity: 0; transform: translateY(30px) scale(0.95); }
@@ -578,6 +579,7 @@ header .tagline {
 .bottle[data-chem="glutamate"]      { --glow: #f97316; --glow-alpha: rgba(249,115,22,0.35); }
 .bottle[data-chem="dmt"]            { --glow: #c084fc; --glow-alpha: rgba(192,132,252,0.35); }
 .bottle[data-chem="testosterone"]   { --glow: #ef4444; --glow-alpha: rgba(239,68,68,0.35); }
+.bottle[data-chem="adrenaline"]     { --glow: #E87461; --glow-alpha: rgba(232,116,97,0.35); }
 
 /* ── SIDE EFFECTS SECTION ── */
 .side-effects {
@@ -1065,7 +1067,7 @@ const projects = [
     rx: 'RTR-2024',
     dose: '14 NPCs / 40+ techniques',
     tags: ['SwiftUI', 'Claude AI'],
-    url: 'https://github.com/melmarion/read-the-room-ios',
+    url: 'https://read-the-room-psi.vercel.app',
     rotate: 1.5,
     hasCanvas: true,
     canvasId: 'cv0'
@@ -1078,7 +1080,7 @@ const projects = [
     rx: 'SIG-2024',
     dose: '50 signs / 10 units',
     tags: ['SwiftUI', 'Gamification'],
-    url: 'https://github.com/melmarion/sign-language-app',
+    url: 'https://sign-language-app-seven.vercel.app',
     rotate: -2,
     hasCanvas: true,
     canvasId: 'cv1'
@@ -1104,7 +1106,7 @@ const projects = [
     rx: 'WH-2024',
     dose: 'Procedural / Infinite',
     tags: ['CoreGraphics', 'Game'],
-    url: 'https://github.com/melmarion/Wild-Farm',
+    url: 'https://wild-farm.vercel.app',
     rotate: 2.5,
     hasCanvas: true,
     canvasId: 'cv3'
@@ -1143,7 +1145,7 @@ const projects = [
     rx: 'SYN-2024',
     dose: 'Dynamic difficulty',
     tags: ['React', 'DOSE'],
-    url: 'https://github.com/melmarion/synapse',
+    url: 'https://synapse-nu-five.vercel.app',
     rotate: -1.5,
     hasCanvas: false
   },
@@ -1181,6 +1183,18 @@ const projects = [
     tags: ['AI', 'Claude'],
     url: 'https://github.com/melmarion/Persuade-Me',
     rotate: 1.8,
+    hasCanvas: false
+  },
+  {
+    chem: 'adrenaline',
+    chemName: 'ADRENALINE',
+    project: 'Pose Prompter',
+    desc: 'Creative catalyst. Assembles AI image prompts from 1,384 options across 32 categories.',
+    rx: 'PP-2025',
+    dose: '183 presets / ∞ combos',
+    tags: ['React', 'SwiftUI', 'Firebase'],
+    url: 'https://pose-prompter.web.app',
+    rotate: -1.2,
     hasCanvas: false
   }
 ];
