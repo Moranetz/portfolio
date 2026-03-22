@@ -433,6 +433,8 @@ function positionCards() {
 const Snd = {
   _c: null,
   _m: null,
+  _hissNode: null,
+  _hissGain: null,
   ctx() {
     if (!this._c) {
       this._c = new (window.AudioContext || window.webkitAudioContext)();
@@ -444,6 +446,7 @@ const Snd = {
     if (this._c.state === 'suspended') this._c.resume();
     return this._c;
   },
+  // Core oscillator
   osc(freq, { delay=0, dur=0.1, vol=0.12, wave='sine', attack=0.008, release=0.06 } = {}) {
     try {
       const c = this.ctx(), t = c.currentTime + delay;
@@ -456,35 +459,170 @@ const Snd = {
       o.start(t); o.stop(t + dur + release + 0.05);
     } catch(_) {}
   },
-  // Rotate click — vinyl crackle + soft thud
+  // Frequency sweep (for rewind/ff whir)
+  sweep(startF, endF, { delay=0, dur=0.2, vol=0.06, wave='sawtooth' } = {}) {
+    try {
+      const c = this.ctx(), t = c.currentTime + delay;
+      const o = c.createOscillator(), g = c.createGain();
+      const f = c.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 2000; f.Q.value = 2;
+      o.type = wave;
+      o.frequency.setValueAtTime(startF, t);
+      o.frequency.exponentialRampToValueAtTime(Math.max(endF, 1), t + dur);
+      o.connect(f); f.connect(g); g.connect(this._m);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(vol, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur + 0.03);
+      o.start(t); o.stop(t + dur + 0.08);
+    } catch(_) {}
+  },
+  // Shaped noise burst (for mechanical clicks, plastic impacts)
+  noise({ delay=0, dur=0.04, vol=0.15, filterFreq=2000, filterQ=1, filterType='bandpass' } = {}) {
+    try {
+      const c = this.ctx(), t = c.currentTime + delay;
+      const bufSize = Math.ceil(c.sampleRate * (dur + 0.1));
+      const buf = c.createBuffer(1, bufSize, c.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+      const src = c.createBufferSource(); src.buffer = buf;
+      const g = c.createGain();
+      const f = c.createBiquadFilter(); f.type = filterType; f.frequency.value = filterFreq; f.Q.value = filterQ;
+      src.connect(f); f.connect(g); g.connect(this._m);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(vol, t + 0.002);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      src.start(t); src.stop(t + dur + 0.05);
+    } catch(_) {}
+  },
+
+  // ═══ CASSETTE SOUNDS ═══
+
+  // Rotate carousel — tape shuffling through a case (plastic slide + light click)
   rotate() {
-    this.osc(180, { dur: 0.04, vol: 0.08, wave: 'triangle' });
-    this.osc(2800, { delay: 0.01, dur: 0.015, vol: 0.03, wave: 'sawtooth' });
+    // Plastic slide friction
+    this.noise({ dur: 0.06, vol: 0.08, filterFreq: 3000, filterQ: 0.8, filterType: 'highpass' });
+    // Light mechanical click at end
+    this.noise({ delay: 0.04, dur: 0.012, vol: 0.12, filterFreq: 4500, filterQ: 3, filterType: 'bandpass' });
+    // Subtle plastic resonance
+    this.osc(120, { delay: 0.04, dur: 0.03, vol: 0.04, wave: 'triangle' });
   },
-  // Lift cassette — rising whoosh
+
+  // Tape insert — cassette sliding into deck (friction + mechanical ka-chunk)
   lift() {
-    this.osc(200, { dur: 0.15, vol: 0.06, wave: 'sine' });
-    this.osc(400, { delay: 0.04, dur: 0.12, vol: 0.05, wave: 'sine' });
-    this.osc(800, { delay: 0.08, dur: 0.1, vol: 0.04, wave: 'sine' });
+    // Plastic friction slide (ascending)
+    this.noise({ dur: 0.1, vol: 0.06, filterFreq: 1800, filterQ: 1.5, filterType: 'bandpass' });
+    // Mechanical catch — spring-loaded latch
+    this.noise({ delay: 0.08, dur: 0.02, vol: 0.18, filterFreq: 3500, filterQ: 4, filterType: 'bandpass' });
+    this.osc(90, { delay: 0.08, dur: 0.04, vol: 0.1, wave: 'triangle' }); // thud body
+    // Spring rattle
+    this.osc(2200, { delay: 0.1, dur: 0.03, vol: 0.02, wave: 'sine' });
+    this.osc(1800, { delay: 0.12, dur: 0.02, vol: 0.015, wave: 'sine' });
+    // Motor spinup hint
+    this.sweep(60, 200, { delay: 0.14, dur: 0.2, vol: 0.02, wave: 'triangle' });
   },
-  // Drop cassette back — descending thud
+
+  // Eject — spring-loaded pop + plastic clatter
   drop() {
-    this.osc(400, { dur: 0.08, vol: 0.06, wave: 'sine' });
-    this.osc(150, { delay: 0.03, dur: 0.1, vol: 0.08, wave: 'triangle' });
+    // Mechanical release snap
+    this.noise({ dur: 0.015, vol: 0.2, filterFreq: 5000, filterQ: 3, filterType: 'bandpass' });
+    // Plastic body thud
+    this.osc(100, { dur: 0.05, vol: 0.1, wave: 'triangle' });
+    this.osc(65, { delay: 0.01, dur: 0.06, vol: 0.06, wave: 'sine' });
+    // Spring recoil
+    this.noise({ delay: 0.02, dur: 0.04, vol: 0.06, filterFreq: 2500, filterQ: 2, filterType: 'highpass' });
+    // Cassette rattling in the tray
+    this.noise({ delay: 0.06, dur: 0.03, vol: 0.04, filterFreq: 4000, filterQ: 1, filterType: 'highpass' });
+    this.noise({ delay: 0.1, dur: 0.02, vol: 0.025, filterFreq: 3500, filterQ: 1, filterType: 'highpass' });
   },
-  // Unlock new tape — bright two-tone chime
+
+  // Play button press — chunky mechanical ka-chunk
+  play() {
+    // Button travel down
+    this.noise({ dur: 0.008, vol: 0.1, filterFreq: 800, filterQ: 2, filterType: 'lowpass' });
+    // Mechanical engage — the satisfying CHUNK
+    this.noise({ delay: 0.03, dur: 0.025, vol: 0.25, filterFreq: 1200, filterQ: 5, filterType: 'bandpass' });
+    this.osc(80, { delay: 0.03, dur: 0.06, vol: 0.12, wave: 'triangle' }); // body resonance
+    // Solenoid click
+    this.noise({ delay: 0.05, dur: 0.008, vol: 0.08, filterFreq: 6000, filterQ: 3, filterType: 'highpass' });
+    // Motor engage hum
+    this.sweep(30, 55, { delay: 0.08, dur: 0.3, vol: 0.015, wave: 'sine' });
+  },
+
+  // Fast forward whir — accelerating high-pitched whine
+  ff() {
+    this.sweep(200, 2400, { dur: 0.4, vol: 0.04, wave: 'sawtooth' });
+    this.sweep(100, 1200, { dur: 0.4, vol: 0.03, wave: 'triangle' });
+    // Motor whine overtone
+    this.sweep(400, 4800, { delay: 0.05, dur: 0.35, vol: 0.02, wave: 'sine' });
+    // Reel clatter
+    this.noise({ dur: 0.4, vol: 0.03, filterFreq: 6000, filterQ: 0.5, filterType: 'highpass' });
+  },
+
+  // Rewind — reverse whir (descending)
+  rew() {
+    this.sweep(2400, 200, { dur: 0.35, vol: 0.04, wave: 'sawtooth' });
+    this.sweep(1200, 100, { dur: 0.35, vol: 0.03, wave: 'triangle' });
+    this.sweep(4800, 400, { delay: 0.03, dur: 0.32, vol: 0.02, wave: 'sine' });
+    this.noise({ dur: 0.35, vol: 0.025, filterFreq: 5500, filterQ: 0.5, filterType: 'highpass' });
+  },
+
+  // Stop — abrupt mechanical snap
+  stop() {
+    // Hard stop click
+    this.noise({ dur: 0.01, vol: 0.2, filterFreq: 2000, filterQ: 4, filterType: 'bandpass' });
+    this.osc(70, { dur: 0.03, vol: 0.08, wave: 'triangle' });
+    // Motor wind-down
+    this.sweep(55, 20, { delay: 0.02, dur: 0.15, vol: 0.01, wave: 'sine' });
+  },
+
+  // Tape hiss — continuous background when front card is active
+  hissOn() {
+    try {
+      if (this._hissNode) return; // already playing
+      const c = this.ctx();
+      const bufSize = c.sampleRate * 2;
+      const buf = c.createBuffer(1, bufSize, c.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < bufSize; i++) data[i] = Math.random() * 2 - 1;
+      this._hissNode = c.createBufferSource(); this._hissNode.buffer = buf; this._hissNode.loop = true;
+      this._hissGain = c.createGain(); this._hissGain.gain.value = 0;
+      const hpf = c.createBiquadFilter(); hpf.type = 'highpass'; hpf.frequency.value = 4000; hpf.Q.value = 0.5;
+      const lpf = c.createBiquadFilter(); lpf.type = 'lowpass'; lpf.frequency.value = 12000;
+      this._hissNode.connect(hpf); hpf.connect(lpf); lpf.connect(this._hissGain); this._hissGain.connect(this._m);
+      this._hissNode.start();
+      // Fade in
+      this._hissGain.gain.linearRampToValueAtTime(0.018, c.currentTime + 0.5);
+    } catch(_) {}
+  },
+  hissOff() {
+    try {
+      if (!this._hissGain) return;
+      const c = this.ctx();
+      this._hissGain.gain.linearRampToValueAtTime(0.0001, c.currentTime + 0.3);
+      const node = this._hissNode;
+      setTimeout(() => { try { node.stop(); } catch(_) {} }, 400);
+      this._hissNode = null; this._hissGain = null;
+    } catch(_) {}
+  },
+
+  // Unlock new tape — rewinding to the right spot + chime
   unlock() {
-    this.osc(880, { dur: 0.1, vol: 0.14, attack: 0.01, release: 0.12 });
-    this.osc(1320, { delay: 0.08, dur: 0.12, vol: 0.1, attack: 0.01, release: 0.15 });
+    this.rew();
+    this.osc(880, { delay: 0.35, dur: 0.1, vol: 0.14, attack: 0.01, release: 0.12 });
+    this.osc(1320, { delay: 0.43, dur: 0.12, vol: 0.1, attack: 0.01, release: 0.15 });
   },
-  // Toast notification — subtle ping
+
+  // Toast notification — tape counter click
   toast() {
-    this.osc(1200, { dur: 0.05, vol: 0.06, attack: 0.005, release: 0.08 });
+    this.noise({ dur: 0.008, vol: 0.06, filterFreq: 5000, filterQ: 2, filterType: 'bandpass' });
+    this.osc(1400, { delay: 0.01, dur: 0.03, vol: 0.04, attack: 0.003, release: 0.05 });
   },
 };
 
 function rotateCarousel(newIndex) {
+  Snd.hissOff(); // stop hiss on old tape
   Snd.rotate();
+  // Start hiss on new front tape after rotation settles
+  setTimeout(() => Snd.hissOn(), 600);
   // Drop any lifted cassette when rotating
   document.querySelectorAll('.card-inner.lifted').forEach(inner => {
     inner.classList.remove('lifted');
@@ -644,13 +782,15 @@ document.querySelectorAll('.card-inner').forEach((inner, idx) => {
       cassette.classList.add('lifted');
       inner.classList.add('lifted');
       Snd.lift();
+      Snd.play(); // mechanical ka-chunk of pressing play
     } else if (liftedState[idx] && dy < -80) {
       liftedState[idx] = false;
       cassette.classList.remove('lifted');
       inner.classList.remove('lifted');
       cassette.style.transform = '';
       inner.querySelector('.underbelly').style.opacity = '0';
-      Snd.drop();
+      Snd.stop(); // motor stops
+      Snd.drop(); // eject clatter
     } else {
       if (liftedState[idx]) {
         cassette.classList.add('lifted');
@@ -677,12 +817,14 @@ document.querySelectorAll('.card-inner').forEach((inner, idx) => {
       cassette.classList.add('lifted');
       inner.classList.add('lifted');
       Snd.lift();
+      Snd.play();
     } else {
       liftedState[idx] = false;
       cassette.classList.remove('lifted');
       inner.classList.remove('lifted');
       cassette.style.transform = '';
       inner.querySelector('.underbelly').style.opacity = '0';
+      Snd.stop();
       Snd.drop();
     }
   });
