@@ -628,6 +628,158 @@ header .tagline {
   margin-bottom: 12px;
 }
 
+/* ── PHARMACY COUNTER (scheduling + socials) ── */
+.counter {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 40px 24px 20px;
+  position: relative;
+  z-index: 1;
+}
+.counter-title {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.15);
+  text-align: center;
+  margin-bottom: 20px;
+}
+.counter-shelf {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+/* Shelf item — small product box */
+.shelf-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: inherit;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #16161e 0%, #111118 100%);
+  border: 1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 2px 0 rgba(0,0,0,0.3), 0 4px 12px rgba(0,0,0,0.3);
+  transition: transform 0.25s cubic-bezier(.22,1,.36,1), box-shadow 0.25s, border-color 0.3s;
+  min-width: 90px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+}
+.shelf-item::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: linear-gradient(165deg, rgba(255,255,255,0.04), transparent 40%);
+  pointer-events: none;
+}
+.shelf-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 0 rgba(0,0,0,0.3), 0 10px 24px rgba(0,0,0,0.4), 0 0 20px var(--item-glow, rgba(139,108,255,0.08));
+  border-color: rgba(255,255,255,0.08);
+}
+.shelf-icon {
+  font-size: 24px;
+  line-height: 1;
+}
+.shelf-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  text-align: center;
+  line-height: 1.3;
+}
+.shelf-sub {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.42rem;
+  color: rgba(255,255,255,0.15);
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+
+/* Consultation window — the scheduling CTA */
+.consult {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 20px 24px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #16161e 0%, #111118 100%);
+  border: 1px solid rgba(255,255,255,0.04);
+  box-shadow: 0 2px 0 rgba(0,0,0,0.3), 0 6px 20px rgba(0,0,0,0.3);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.consult::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 12px;
+  background: linear-gradient(165deg, rgba(255,255,255,0.03), transparent 30%);
+  pointer-events: none;
+}
+.consult-rx {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+  margin-bottom: 8px;
+}
+.consult-heading {
+  font-family: 'Archivo Black', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: -0.02em;
+  color: #e0e0e0;
+  margin-bottom: 4px;
+}
+.consult-sub {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 16px;
+}
+.consult-btn {
+  display: inline-block;
+  padding: 10px 28px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(180,120,40,0.7), rgba(160,100,30,0.5));
+  border: 1px solid rgba(180,120,40,0.3);
+  color: #e0d0b0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.25s;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.3), 0 0 12px rgba(180,120,40,0.1);
+}
+.consult-btn:hover {
+  background: linear-gradient(135deg, rgba(180,120,40,0.9), rgba(160,100,30,0.7));
+  box-shadow: 0 4px 0 rgba(0,0,0,0.3), 0 0 24px rgba(180,120,40,0.2);
+  transform: translateY(-2px);
+}
+.consult-wait {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.48rem;
+  color: rgba(255,255,255,0.12);
+  margin-top: 10px;
+  letter-spacing: 0.08em;
+}
+
 /* ── footer ── */
 footer {
   text-align: center;
@@ -686,6 +838,49 @@ footer p {
 
     <div class="se-heading">Manufacturer</div>
     <div class="se-body">melmarion laboratories &mdash; est. 2024<br>github.com/melmarion</div>
+  </div>
+</div>
+
+<!-- PHARMACY COUNTER -->
+<div class="counter">
+  <div class="counter-title">▸ Pharmacy Counter</div>
+
+  <div class="counter-shelf">
+    <a class="shelf-item" href="https://linkedin.com/in/melmarion" target="_blank" style="--item-glow:rgba(10,102,194,0.12)">
+      <div class="shelf-icon">💼</div>
+      <div class="shelf-label">LinkedIn</div>
+      <div class="shelf-sub">Professional<br>referral</div>
+    </a>
+    <a class="shelf-item" href="https://instagram.com/melmarion" target="_blank" style="--item-glow:rgba(225,48,108,0.12)">
+      <div class="shelf-icon">📸</div>
+      <div class="shelf-label">Instagram</div>
+      <div class="shelf-sub">Visual<br>catalog</div>
+    </a>
+    <a class="shelf-item" href="https://youtube.com/@melmarion" target="_blank" style="--item-glow:rgba(255,0,0,0.1)">
+      <div class="shelf-icon">🎬</div>
+      <div class="shelf-label">YouTube</div>
+      <div class="shelf-sub">Lab<br>footage</div>
+    </a>
+    <a class="shelf-item" href="https://x.com/melmarion" target="_blank" style="--item-glow:rgba(255,255,255,0.06)">
+      <div class="shelf-icon">𝕏</div>
+      <div class="shelf-label">Twitter</div>
+      <div class="shelf-sub">Daily<br>bulletin</div>
+    </a>
+    <a class="shelf-item" href="https://github.com/melmarion" target="_blank" style="--item-glow:rgba(139,108,255,0.12)">
+      <div class="shelf-icon">⚗️</div>
+      <div class="shelf-label">GitHub</div>
+      <div class="shelf-sub">48 formulas<br>in stock</div>
+    </a>
+  </div>
+
+  <div class="consult">
+    <div class="consult-rx">℞ Consultation Request</div>
+    <div class="consult-heading">Schedule a Consultation</div>
+    <div class="consult-sub">Walk-ins welcome. Appointments preferred.</div>
+    <a class="consult-btn" href="https://cal.com/melmarion" target="_blank">
+      Book Appointment
+    </a>
+    <div class="consult-wait">Avg. wait time: &lt;1 business day &middot; No referral needed</div>
   </div>
 </div>
 
