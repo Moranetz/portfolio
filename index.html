@@ -429,7 +429,62 @@ function positionCards() {
   });
 }
 
+// ═══ SOUND ENGINE (Web Audio oscillator synthesis) ═══
+const Snd = {
+  _c: null,
+  _m: null,
+  ctx() {
+    if (!this._c) {
+      this._c = new (window.AudioContext || window.webkitAudioContext)();
+      const comp = this._c.createDynamicsCompressor();
+      comp.threshold.value = -18; comp.ratio.value = 4; comp.attack.value = 0.003; comp.release.value = 0.15;
+      comp.connect(this._c.destination);
+      this._m = this._c.createGain(); this._m.gain.value = 0.7; this._m.connect(comp);
+    }
+    if (this._c.state === 'suspended') this._c.resume();
+    return this._c;
+  },
+  osc(freq, { delay=0, dur=0.1, vol=0.12, wave='sine', attack=0.008, release=0.06 } = {}) {
+    try {
+      const c = this.ctx(), t = c.currentTime + delay;
+      const o = c.createOscillator(), g = c.createGain();
+      o.type = wave; o.frequency.setValueAtTime(freq, t);
+      o.connect(g); g.connect(this._m);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(vol, t + attack);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur + release);
+      o.start(t); o.stop(t + dur + release + 0.05);
+    } catch(_) {}
+  },
+  // Rotate click — vinyl crackle + soft thud
+  rotate() {
+    this.osc(180, { dur: 0.04, vol: 0.08, wave: 'triangle' });
+    this.osc(2800, { delay: 0.01, dur: 0.015, vol: 0.03, wave: 'sawtooth' });
+  },
+  // Lift cassette — rising whoosh
+  lift() {
+    this.osc(200, { dur: 0.15, vol: 0.06, wave: 'sine' });
+    this.osc(400, { delay: 0.04, dur: 0.12, vol: 0.05, wave: 'sine' });
+    this.osc(800, { delay: 0.08, dur: 0.1, vol: 0.04, wave: 'sine' });
+  },
+  // Drop cassette back — descending thud
+  drop() {
+    this.osc(400, { dur: 0.08, vol: 0.06, wave: 'sine' });
+    this.osc(150, { delay: 0.03, dur: 0.1, vol: 0.08, wave: 'triangle' });
+  },
+  // Unlock new tape — bright two-tone chime
+  unlock() {
+    this.osc(880, { dur: 0.1, vol: 0.14, attack: 0.01, release: 0.12 });
+    this.osc(1320, { delay: 0.08, dur: 0.12, vol: 0.1, attack: 0.01, release: 0.15 });
+  },
+  // Toast notification — subtle ping
+  toast() {
+    this.osc(1200, { dur: 0.05, vol: 0.06, attack: 0.005, release: 0.08 });
+  },
+};
+
 function rotateCarousel(newIndex) {
+  Snd.rotate();
   // Drop any lifted cassette when rotating
   document.querySelectorAll('.card-inner.lifted').forEach(inner => {
     inner.classList.remove('lifted');
@@ -588,12 +643,14 @@ document.querySelectorAll('.card-inner').forEach((inner, idx) => {
       liftedState[idx] = true;
       cassette.classList.add('lifted');
       inner.classList.add('lifted');
+      Snd.lift();
     } else if (liftedState[idx] && dy < -80) {
       liftedState[idx] = false;
       cassette.classList.remove('lifted');
       inner.classList.remove('lifted');
       cassette.style.transform = '';
       inner.querySelector('.underbelly').style.opacity = '0';
+      Snd.drop();
     } else {
       if (liftedState[idx]) {
         cassette.classList.add('lifted');
@@ -619,12 +676,14 @@ document.querySelectorAll('.card-inner').forEach((inner, idx) => {
       liftedState[idx] = true;
       cassette.classList.add('lifted');
       inner.classList.add('lifted');
+      Snd.lift();
     } else {
       liftedState[idx] = false;
       cassette.classList.remove('lifted');
       inner.classList.remove('lifted');
       cassette.style.transform = '';
       inner.querySelector('.underbelly').style.opacity = '0';
+      Snd.drop();
     }
   });
 });
@@ -633,7 +692,7 @@ document.querySelectorAll('.card-inner').forEach((inner, idx) => {
 const viewed = new Set(); let unlocked = 3; const hoverMs = {}, hoverStart = {};
 function updateProg() { const n = viewed.size, vp = 8 + (n / 6) * 92; document.getElementById('pFill').style.width = vp + '%'; document.getElementById('pTxt').textContent = `Explored ${n} / 6`; document.getElementById('pPct').textContent = Math.round(vp) + '%'; if (n > 0) document.getElementById('prog').classList.add('show') }
 function reveal(i) { const el = document.getElementById('c' + i); el.classList.remove('locked'); el.style.opacity = '0'; el.style.transform = 'translateY(28px) scale(0.97)'; requestAnimationFrame(() => { el.style.transition = 'opacity .5s,transform .5s cubic-bezier(.22,1,.36,1),filter .3s'; el.style.opacity = '1'; el.style.transform = 'translateY(0) scale(1)'; el.style.filter = 'none'; el.style.pointerEvents = 'auto' }) }
-function tryUnlock() { if (viewed.size >= 2 && unlocked < 4) { unlocked = 4; reveal(3); qToast('New tape unlocked: Wild Hearts') } if (viewed.size >= 3 && unlocked < 5) { unlocked = 5; reveal(4); qToast('New tape unlocked: ClearFrame') } if (viewed.size >= 4 && unlocked < 6) { unlocked = 6; reveal(5); qToast('New tape unlocked: PostBridge MCP') } }
+function tryUnlock() { if (viewed.size >= 2 && unlocked < 4) { unlocked = 4; reveal(3); Snd.unlock(); qToast('New tape unlocked: Wild Hearts') } if (viewed.size >= 3 && unlocked < 5) { unlocked = 5; reveal(4); Snd.unlock(); qToast('New tape unlocked: ClearFrame') } if (viewed.size >= 4 && unlocked < 6) { unlocked = 6; reveal(5); Snd.unlock(); qToast('New tape unlocked: PostBridge MCP') } }
 
 // Mark first card as viewed on load
 viewed.add(0);
@@ -655,7 +714,7 @@ setInterval(() => {
 
 const toastQ = []; let toastBusy = false;
 function qToast(m) { toastQ.push(m); if (!toastBusy) showNext() }
-function showNext() { if (!toastQ.length) { toastBusy = false; return } toastBusy = true; const m = toastQ.shift(); const el = document.getElementById('toast'); el.textContent = m; el.classList.add('show'); setTimeout(() => { el.classList.remove('show'); setTimeout(showNext, 400) }, 3200) }
+function showNext() { if (!toastQ.length) { toastBusy = false; return } toastBusy = true; Snd.toast(); const m = toastQ.shift(); const el = document.getElementById('toast'); el.textContent = m; el.classList.add('show'); setTimeout(() => { el.classList.remove('show'); setTimeout(showNext, 400) }, 3200) }
 
 // ═══ CANVAS RENDERERS ═══
 function initCanvas(id) { const c = document.getElementById(id); if (!c) return null; const x = c.getContext('2d'); const rect = c.parentElement; const w = rect.offsetWidth || 340; const h = rect.offsetHeight || 160; c.width = w * 2; c.height = h * 2; return { c, x, W: c.width, H: c.height } }
