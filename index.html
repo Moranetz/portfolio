@@ -38,34 +38,48 @@ body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opac
 /* Side label */
 .side{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:800;letter-spacing:4px;text-transform:uppercase;color:var(--tg);margin-bottom:18px;padding-left:2px}
 
-/* ═══ WALLET STACK CONTAINER ═══ */
+/* ═══ HORIZONTAL CARD STACK ═══ */
 .wallet-stack{
   position:relative;
-  /* tall enough to scroll through and fan out all cards */
-  height:2200px;
-  margin-top:12px;
+  display:flex;
+  overflow-x:auto;
+  scroll-snap-type:x mandatory;
+  gap:0;
+  padding:0 10vw;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+  perspective:1000px;
 }
+.wallet-stack::-webkit-scrollbar{display:none}
 
-/* ═══ CARD WRAPPER (sticky positioning for wallet fan) ═══ */
 .card-wrap{
-  position:sticky;
-  width:100%;
-  z-index:6;
+  flex-shrink:0;
+  width:80vw;
+  max-width:380px;
+  scroll-snap-align:center;
   perspective:900px;
   transform-style:preserve-3d;
+  padding:10px 8px;
 }
-.card-wrap:nth-child(1){top:80px;z-index:6}
-.card-wrap:nth-child(2){top:124px;z-index:5}
-.card-wrap:nth-child(3){top:168px;z-index:4}
-.card-wrap:nth-child(4){top:212px;z-index:3}
-.card-wrap:nth-child(5){top:256px;z-index:2}
-.card-wrap:nth-child(6){top:300px;z-index:1}
 
 .card-inner{
   position:relative;
   width:100%;
-  margin-bottom:20px;
   transform-style:preserve-3d;
+}
+
+/* Dot indicator */
+.dot-nav{
+  display:flex;justify-content:center;gap:8px;margin-top:18px;
+}
+.dot{
+  width:8px;height:8px;border-radius:50%;
+  background:rgba(255,255,255,0.12);
+  transition:all .3s;
+}
+.dot.active{
+  background:var(--purple);
+  width:24px;border-radius:4px;
 }
 
 /* ═══ CASSETTE ═══ */
@@ -281,7 +295,7 @@ body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opac
   .hdr h1{font-size:34px}
   .lb-title{font-size:12px}
   .reel-svg{width:40px;height:40px}
-  .wallet-stack{height:1900px}
+  .card-wrap{width:78vw;max-width:340px}
   .ub-title{font-size:18px}
   .ub-desc{font-size:12px}
   .ub-btn{font-size:12px;padding:9px 18px}
@@ -306,6 +320,7 @@ body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;opac
   <div class="side">Side A</div>
 
   <div class="wallet-stack" id="walletStack"></div>
+  <div class="dot-nav" id="dotNav"></div>
 
   <footer class="ftr">
     <a href="https://github.com/melmarion" target="_blank"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg></a>
@@ -378,6 +393,34 @@ P.forEach((p,i)=>{
     </div>
   </div>`);
 });
+
+// ═══ DOT NAV ═══
+const dotNav=document.getElementById('dotNav');
+P.forEach((_,i)=>dotNav.insertAdjacentHTML('beforeend',`<div class="dot${i===0?' active':''}" data-i="${i}"></div>`));
+const dots=dotNav.querySelectorAll('.dot');
+
+stack.addEventListener('scroll',()=>{
+  const scrollL=stack.scrollLeft;
+  const cardW=stack.querySelector('.card-wrap').offsetWidth;
+  const active=Math.round(scrollL/cardW);
+  dots.forEach((d,i)=>d.classList.toggle('active',i===active));
+  // Update now-playing
+  if(active>=0&&active<P.length&&active<unlocked){
+    viewed.add(active);
+    document.getElementById('npT').textContent=P[active].title;
+    document.getElementById('npC').textContent=viewed.size+'/6';
+    document.getElementById('np').classList.add('vis');
+    document.getElementById('o1').style.background=`${P[active].stripe}11`;
+    updateProg();tryUnlock();
+  }
+},{passive:true});
+
+// Click dots to scroll
+dots.forEach(d=>d.addEventListener('click',()=>{
+  const i=parseInt(d.dataset.i);
+  const cardW=stack.querySelector('.card-wrap').offsetWidth;
+  stack.scrollTo({left:i*cardW,behavior:'smooth'});
+}));
 
 // ═══ SWIPE UP / CLICK TO LIFT ═══
 document.querySelectorAll('.card-inner').forEach((inner,idx)=>{
