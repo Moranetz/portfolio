@@ -111,7 +111,6 @@ header .tagline {
 .bottle-wrap:nth-child(8) { animation-delay: 0.45s; }
 .bottle-wrap:nth-child(9) { animation-delay: 0.5s; }
 .bottle-wrap:nth-child(10) { animation-delay: 0.55s; }
-.bottle-wrap:nth-child(11) { animation-delay: 0.6s; }
 
 @keyframes bottleIn {
   from { opacity: 0; transform: translateY(30px) scale(0.95); }
@@ -579,7 +578,6 @@ header .tagline {
 .bottle[data-chem="glutamate"]      { --glow: #f97316; --glow-alpha: rgba(249,115,22,0.35); }
 .bottle[data-chem="dmt"]            { --glow: #c084fc; --glow-alpha: rgba(192,132,252,0.35); }
 .bottle[data-chem="testosterone"]   { --glow: #ef4444; --glow-alpha: rgba(239,68,68,0.35); }
-.bottle[data-chem="adrenaline"]     { --glow: #E87461; --glow-alpha: rgba(232,116,97,0.35); }
 
 /* ── SIDE EFFECTS SECTION ── */
 .side-effects {
@@ -810,62 +808,6 @@ footer p {
     font-size: 0.52rem;
   }
 }
-
-/* ── header intro paragraph ── */
-.header-intro {
-  font-family: 'Outfit', sans-serif;
-  font-weight: 300;
-  font-size: clamp(0.8rem, 1.8vw, 0.95rem);
-  color: rgba(255,255,255,0.35);
-  max-width: 600px;
-  margin: 16px auto 0;
-  line-height: 1.7;
-  text-align: center;
-}
-
-.header-stats {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
-  color: rgba(255,255,255,0.25);
-  letter-spacing: 0.1em;
-  margin-top: 14px;
-}
-
-/* ── ABOUT SECTION ── */
-.about {
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 50px 30px 40px;
-  position: relative;
-  z-index: 1;
-}
-.about h2 {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.65rem;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.2);
-  margin-bottom: 24px;
-}
-.about p {
-  font-family: 'Outfit', sans-serif;
-  font-weight: 300;
-  font-size: clamp(0.82rem, 1.6vw, 0.92rem);
-  color: rgba(255,255,255,0.45);
-  line-height: 1.8;
-  margin-bottom: 16px;
-}
-.about .highlight {
-  color: rgba(255,255,255,0.65);
-}
-.about .aside {
-  font-style: italic;
-  color: rgba(255,255,255,0.3);
-}
-
-/* ── 12th bottle animation delay ── */
-.bottle-wrap:nth-child(12) { animation-delay: 0.65s; }
 </style>
 </head>
 <body>
@@ -873,68 +815,29 @@ footer p {
 <header>
   <h1>melmarion</h1>
   <p class="subtitle">pharmacy &mdash; behavioral compounds</p>
-  <p class="tagline">I build tools that make invisible systems visible.</p>
-  <p class="header-intro">You&rsquo;ve seen portfolios before. Probably too many this week. Most of them list the same frameworks, show the same todo apps, claim the same passion for clean code. And somewhere around the twentieth one, you stopped reading the descriptions and started just scanning for something that felt different.</p>
-  <p class="header-intro">That instinct is right. Because what you&rsquo;re actually looking for isn&rsquo;t on the resume.</p>
-  <p class="header-stats">52 repos &middot; 11 shipped &middot; Zero templates &middot; Everything rendered from first principles.</p>
+  <p class="tagline">"Serious utility disguised as something engaging"</p>
 </header>
 
 <div class="grid" id="grid">
   <!-- bottles injected by script -->
 </div>
 
-<div class="about">
-  <h2>What I actually do</h2>
-
-  <p>Most developers ship features. I ship behavioral models.</p>
-
-  <p>The engineering is a given &mdash; 71,000 lines of Swift, production React, Python backends, Core Graphics rendering where every pixel is calculated, not loaded from a sprite sheet. Every developer has a tech stack. The question is what sits underneath the interface.</p>
-
-  <p>ReadTheRoom looks exactly like your iMessage inbox. Same bubbles. Same typing indicator. Same three dots that make your stomach tighten a little while you wait for a response. Except every person in your inbox is fictional, and every conversation is a scenario where real persuasion psychology determines whether you succeed or fail.</p>
-
-  <p>14 characters. Each one has an attachment style, Big Five personality scores, defense mechanisms, and specific vulnerabilities. You can send the same message to the anxious-attached friend and the avoidant coworker and watch it land completely differently. You can&rsquo;t memorize a script. You have to read the person.</p>
-
-  <p>I built a scoring engine across four dimensions: read, rapport, frame, close. And then I built the last character &mdash; <span class="highlight">a therapist &mdash; and gave her a single entry where her defense mechanisms should be: &ldquo;None &mdash; she detects yours.&rdquo;</span></p>
-
-  <p>Every influence technique fails on her. The anchoring that worked on character six. The loss framing that cracked character eleven. The strategic empathy that character three never saw coming. None of it works. The only thing that scores points is the one thing you can&rsquo;t manufacture.</p>
-
-  <p><span class="highlight">I didn&rsquo;t design that as a philosophical statement. It emerged from the system. Forty techniques, tested against fourteen personality models, and the conclusion the math arrived at is that authenticity outperforms strategy.</span> That&rsquo;s not something I decided. The architecture proved it.</p>
-
-  <p>When you open Forecast, you see a weather app. Cloud cover. Temperature. Atmospheric pressure. A sky that shifts from clear to overcast to stormy across the day. Only you know what it actually means. The weather is your hormones. The forecast is your cycle. And the reason it&rsquo;s disguised is a design constraint that drove every pixel: this is nobody&rsquo;s business but yours.</p>
-
-  <p>Underneath the weather metaphor there&rsquo;s a pattern engine tracking data across months &mdash; correlations your conscious mind would never catch. And a Vault for the entries you&rsquo;d never put in an app anyone could see over your shoulder.</p>
-
-  <p><span class="aside">Social Pilot is the one I didn&rsquo;t expect.</span> It started as a tool to schedule Reddit posts. Then it grew a viral scoring engine. Then a behavioral science content generator. Then an autonomous commenting system with timing enforcement and anti-detection. Then a pattern library backed by 20 peer-reviewed psychological mechanisms. Then a content predictor. Then a dating assistant. Then a cross-domain viral research engine.</p>
-
-  <p><span class="highlight">49 tools. It runs while I sleep.</span> It learns which comment styles work in which communities, rewrites its own content strategy every week, and &mdash; the part that still surprises me &mdash; it knows the difference between a comment that performed well because the writing was good and one that performed well because the thread went viral. It separates context from craft. Most analytics platforms built by funded teams can&rsquo;t make that distinction. This one does it automatically from a script running on my laptop.</p>
-
-  <p>You&rsquo;re probably starting to notice something about these projects.</p>
-
-  <p>They don&rsquo;t share a tech stack. They share a question: what happens when you treat human behavior as a system that can be modeled, tested, and made visible?</p>
-
-  <p>You get products that don&rsquo;t just serve users. They anticipate them.</p>
-
-  <p>And if you&rsquo;ve been building products for any length of time, you already know &mdash; that&rsquo;s the piece most teams are missing. Not another feature. Not a faster backend. A model of the person using it that&rsquo;s accurate enough to know what they need before they ask.</p>
-
-  <p><span class="aside">I&rsquo;m not sure that fits into a job title.</span> But I know exactly which teams need it. And I suspect you&rsquo;re reading this because yours is one of them.</p>
-</div>
-
 <div class="side-effects">
   <div class="side-effects-inner">
     <div class="se-heading">Side Effects</div>
-    <div class="se-body">Compulsive pattern recognition. Difficulty using apps without reverse-engineering their engagement model. Persistent urge to build behavioral systems for problems most people solve with intuition.</div>
+    <div class="se-body">May include: compulsive building, involuntary refactoring, strong opinions about engagement mechanics, dark mode dependency, inability to use apps without analyzing their psychology, and an unreasonable belief that everything should have a streak system.</div>
 
     <div class="se-heading">Active Ingredients</div>
-    <div class="se-body">Swift &middot; SwiftUI &middot; React &middot; TypeScript &middot; Python &middot; Core Graphics &middot; Core Haptics &middot; Claude API &middot; OpenClaw &middot; FastAPI &middot; Web Audio &middot; Canvas &middot; behavioral science that works better when you don&rsquo;t notice it</div>
+    <div class="se-body">Swift &middot; SwiftUI &middot; React &middot; TypeScript &middot; Python &middot; Core Graphics &middot; Core Haptics &middot; AVAudioEngine &middot; Claude API &middot; Supabase &middot; MCP</div>
 
     <div class="se-heading">Contraindications</div>
-    <div class="se-body">Do not combine with shallow product thinking or the assumption that users are rational actors.</div>
+    <div class="se-body">Do not combine with: SpriteKit, light mode, or apps that don't respect your intelligence.</div>
 
     <div class="se-heading">Storage</div>
-    <div class="se-body">Dark mode only. Between 0 and &infin; commits. Keep away from anyone who thinks engagement is a vanity metric.</div>
+    <div class="se-body">Keep in dark mode at all times. Store between 0 and &infin; commits.</div>
 
     <div class="se-heading">Manufacturer</div>
-    <div class="se-body">melmarion laboratories &mdash; 52 formulas. All synthesized from first principles. No templates were harmed.</div>
+    <div class="se-body">melmarion laboratories &mdash; est. 2024<br>github.com/melmarion</div>
   </div>
 </div>
 
@@ -966,18 +869,18 @@ footer p {
     <a class="shelf-item" href="https://github.com/melmarion" target="_blank" style="--item-glow:rgba(139,108,255,0.12)">
       <div class="shelf-icon">⚗️</div>
       <div class="shelf-label">GitHub</div>
-      <div class="shelf-sub">52 formulas<br>in stock</div>
+      <div class="shelf-sub">48 formulas<br>in stock</div>
     </a>
   </div>
 
   <div class="consult">
-    <div class="consult-rx">&#8478; Consultation Request</div>
-    <div class="consult-heading">Bring your hardest user behavior problem.</div>
-    <div class="consult-sub">If your product touches human behavior &mdash; and every product does, whether you&rsquo;ve modeled it or not &mdash; I&rsquo;m the person who builds the model. Onboarding that anticipates drop-off before it happens. Engagement loops that feel rewarding instead of manipulative. Social features where the psychology is the architecture, not an afterthought.</div>
+    <div class="consult-rx">℞ Consultation Request</div>
+    <div class="consult-heading">Schedule a Consultation</div>
+    <div class="consult-sub">Walk-ins welcome. Appointments preferred.</div>
     <a class="consult-btn" href="https://cal.com/melmarion" target="_blank">
       Book Appointment
     </a>
-    <div class="consult-wait">No referral needed &middot; Average response time: &lt;1 day &middot; The first conversation is diagnostic.</div>
+    <div class="consult-wait">Avg. wait time: &lt;1 business day &middot; No referral needed</div>
   </div>
 </div>
 
@@ -1162,7 +1065,7 @@ const projects = [
     rx: 'RTR-2024',
     dose: '14 NPCs / 40+ techniques',
     tags: ['SwiftUI', 'Claude AI'],
-    url: 'https://read-the-room-psi.vercel.app',
+    url: 'https://github.com/melmarion/read-the-room-ios',
     rotate: 1.5,
     hasCanvas: true,
     canvasId: 'cv0'
@@ -1175,7 +1078,7 @@ const projects = [
     rx: 'SIG-2024',
     dose: '50 signs / 10 units',
     tags: ['SwiftUI', 'Gamification'],
-    url: 'https://sign-language-app-seven.vercel.app',
+    url: 'https://github.com/melmarion/sign-language-app',
     rotate: -2,
     hasCanvas: true,
     canvasId: 'cv1'
@@ -1188,7 +1091,7 @@ const projects = [
     rx: 'FRC-2024',
     dose: 'Daily / Cycle-synced',
     tags: ['SwiftUI', 'Health'],
-    url: 'https://github.com/melmarion/forecast-ios', // iOS only — no web deploy
+    url: 'https://github.com/melmarion/forecast-ios',
     rotate: -1,
     hasCanvas: true,
     canvasId: 'cv2'
@@ -1201,7 +1104,7 @@ const projects = [
     rx: 'WH-2024',
     dose: 'Procedural / Infinite',
     tags: ['CoreGraphics', 'Game'],
-    url: 'https://wild-farm.vercel.app',
+    url: 'https://github.com/melmarion/Wild-Farm',
     rotate: 2.5,
     hasCanvas: true,
     canvasId: 'cv3'
@@ -1214,7 +1117,7 @@ const projects = [
     rx: 'CF-2024',
     dose: 'Real-time / Per article',
     tags: ['React', 'Chrome Extension'],
-    url: 'https://github.com/melmarion/ground-news', // Chrome extension — no web deploy
+    url: 'https://github.com/melmarion/ground-news',
     rotate: -2.5,
     hasCanvas: true,
     canvasId: 'cv4'
@@ -1227,7 +1130,7 @@ const projects = [
     rx: 'PB-2024',
     dose: '50 tools / On demand',
     tags: ['Python', 'MCP', 'Claude'],
-    url: 'https://github.com/melmarion/post-bridge-mcp', // Python MCP — no web deploy
+    url: 'https://github.com/melmarion/post-bridge-mcp',
     rotate: 1,
     hasCanvas: true,
     canvasId: 'cv5'
@@ -1240,7 +1143,7 @@ const projects = [
     rx: 'SYN-2024',
     dose: 'Dynamic difficulty',
     tags: ['React', 'DOSE'],
-    url: 'https://synapse-nu-five.vercel.app',
+    url: 'https://github.com/melmarion/synapse',
     rotate: -1.5,
     hasCanvas: false
   },
@@ -1252,7 +1155,7 @@ const projects = [
     rx: 'CTX-2024',
     dose: '23 concepts',
     tags: ['React', 'Gamified'],
-    url: 'https://iq-drab.vercel.app',
+    url: 'https://github.com/melmarion/iq',
     rotate: 2,
     hasCanvas: false
   },
@@ -1264,7 +1167,7 @@ const projects = [
     rx: 'EGR-2024',
     dose: '1 ego / session',
     tags: ['Canvas', 'Web Audio'],
-    url: 'https://egregore-nine.vercel.app',
+    url: 'https://github.com/melmarion/egregore',
     rotate: -0.5,
     hasCanvas: false
   },
@@ -1276,32 +1179,8 @@ const projects = [
     rx: 'PM-2024',
     dose: '12 scenarios',
     tags: ['AI', 'Claude'],
-    url: 'https://persuade-me-melindaxmarion-3009s-projects.vercel.app',
+    url: 'https://github.com/melmarion/Persuade-Me',
     rotate: 1.8,
-    hasCanvas: false
-  },
-  {
-    chem: 'adrenaline',
-    chemName: 'ADRENALINE',
-    project: 'Pose Prompter',
-    desc: 'Creative catalyst. Assembles AI image prompts from 1,384 options across 32 categories.',
-    rx: 'PP-2025',
-    dose: '183 presets / ∞ combos',
-    tags: ['React', 'SwiftUI', 'Firebase'],
-    url: 'https://pose-prompter.web.app',
-    rotate: -1.2,
-    hasCanvas: false
-  },
-  {
-    chem: 'norepinephrine',
-    chemName: 'CORTISOL',
-    project: 'Social Pilot',
-    desc: 'Autonomous behavioral agent. 49 tools that generate, score, and post content while modeling human psychology.',
-    rx: 'SP-2026',
-    dose: '49 tools / 24-7',
-    tags: ['TypeScript', 'Python', 'OpenClaw'],
-    url: 'https://github.com/melmarion/social-pilot',
-    rotate: -1.8,
     hasCanvas: false
   }
 ];
