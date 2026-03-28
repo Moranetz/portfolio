@@ -864,8 +864,9 @@ footer p {
   color: rgba(255,255,255,0.3);
 }
 
-/* ── 12th bottle animation delay ── */
+/* ── extra bottle animation delays ── */
 .bottle-wrap:nth-child(12) { animation-delay: 0.65s; }
+.bottle-wrap:nth-child(13) { animation-delay: 0.7s; }
 </style>
 </head>
 <body>
@@ -876,7 +877,7 @@ footer p {
   <p class="tagline">I build tools that make invisible systems visible.</p>
   <p class="header-intro">You&rsquo;ve seen portfolios before. Probably too many this week. Most of them list the same frameworks, show the same todo apps, claim the same passion for clean code. And somewhere around the twentieth one, you stopped reading the descriptions and started just scanning for something that felt different.</p>
   <p class="header-intro">That instinct is right. Because what you&rsquo;re actually looking for isn&rsquo;t on the resume.</p>
-  <p class="header-stats">52 repos &middot; 11 shipped &middot; Zero templates &middot; Everything rendered from first principles.</p>
+  <p class="header-stats">80 repos &middot; 32 public &middot; 126K datapoints &middot; Everything rendered from first principles.</p>
 </header>
 
 <div class="grid" id="grid">
@@ -888,7 +889,7 @@ footer p {
 
   <p>Most developers ship features. I ship behavioral models.</p>
 
-  <p>The engineering is a given &mdash; 71,000 lines of Swift, production React, Python backends, Core Graphics rendering where every pixel is calculated, not loaded from a sprite sheet. Every developer has a tech stack. The question is what sits underneath the interface.</p>
+  <p>The engineering is a given &mdash; 50,000+ lines of Swift, production React, Python backends, Core Graphics rendering where every pixel is calculated, not loaded from a sprite sheet. Every developer has a tech stack. The question is what sits underneath the interface.</p>
 
   <p>ReadTheRoom looks exactly like your iMessage inbox. Same bubbles. Same typing indicator. Same three dots that make your stomach tighten a little while you wait for a response. Except every person in your inbox is fictional, and every conversation is a scenario where real persuasion psychology determines whether you succeed or fail.</p>
 
@@ -906,7 +907,7 @@ footer p {
 
   <p><span class="aside">Social Pilot is the one I didn&rsquo;t expect.</span> It started as a tool to schedule Reddit posts. Then it grew a viral scoring engine. Then a behavioral science content generator. Then an autonomous commenting system with timing enforcement and anti-detection. Then a pattern library backed by 20 peer-reviewed psychological mechanisms. Then a content predictor. Then a dating assistant. Then a cross-domain viral research engine.</p>
 
-  <p><span class="highlight">49 tools. It runs while I sleep.</span> It learns which comment styles work in which communities, rewrites its own content strategy every week, and &mdash; the part that still surprises me &mdash; it knows the difference between a comment that performed well because the writing was good and one that performed well because the thread went viral. It separates context from craft. Most analytics platforms built by funded teams can&rsquo;t make that distinction. This one does it automatically from a script running on my laptop.</p>
+  <p><span class="highlight">56 tools. 85 automated tests. A fine-tuned 7B LLM. It runs while I sleep.</span> It learns which comment styles work in which communities, rewrites its own content strategy every week, and &mdash; the part that still surprises me &mdash; it knows the difference between a comment that performed well because the writing was good and one that performed well because the thread went viral. It separates context from craft. Most analytics platforms built by funded teams can&rsquo;t make that distinction. This one does it automatically from a script running on my laptop.</p>
 
   <p>You&rsquo;re probably starting to notice something about these projects.</p>
 
@@ -936,7 +937,7 @@ footer p {
     <div class="se-body">Dark mode only. Between 0 and &infin; commits. Keep away from anyone who thinks engagement is a vanity metric.</div>
 
     <div class="se-heading">Manufacturer</div>
-    <div class="se-body">melmarion laboratories &mdash; 52 formulas. All synthesized from first principles. No templates were harmed.</div>
+    <div class="se-body">melmarion laboratories &mdash; 80 formulas. All synthesized from first principles. No templates were harmed.</div>
   </div>
 </div>
 
@@ -945,7 +946,7 @@ footer p {
   <div class="counter-title">▸ Pharmacy Counter</div>
 
   <div class="counter-shelf">
-    <a class="shelf-item" href="https://linkedin.com/in/melmarion" target="_blank" style="--item-glow:rgba(10,102,194,0.12)">
+    <a class="shelf-item" href="https://linkedin.com/in/m-marion" target="_blank" style="--item-glow:rgba(10,102,194,0.12)">
       <div class="shelf-icon">💼</div>
       <div class="shelf-label">LinkedIn</div>
       <div class="shelf-sub">Professional<br>referral</div>
@@ -968,7 +969,7 @@ footer p {
     <a class="shelf-item" href="https://github.com/melmarion" target="_blank" style="--item-glow:rgba(139,108,255,0.12)">
       <div class="shelf-icon">⚗️</div>
       <div class="shelf-label">GitHub</div>
-      <div class="shelf-sub">52 formulas<br>in stock</div>
+      <div class="shelf-sub">80 formulas<br>in stock</div>
     </a>
   </div>
 
@@ -1157,6 +1158,18 @@ const Snd = {
 // ═══ PROJECT DATA ═══
 const projects = [
   {
+    chem: 'psilocybin',
+    chemName: 'PSILOCYBIN',
+    project: 'Persuasion-Max',
+    desc: '5-layer mechanistic prediction engine. 126K interactions. 329 tests. 302 parameters. Predicts WHY a message works.',
+    rx: 'PM-2026',
+    dose: '17 endpoints / 12 MCP tools',
+    tags: ['Python', 'FastAPI', 'scikit-learn'],
+    url: 'https://github.com/melmarion/Persuasion-Max',
+    rotate: -0.8,
+    hasCanvas: false
+  },
+  {
     chem: 'oxytocin',
     chemName: 'OXYTOCIN',
     project: 'Read the Room',
@@ -1298,10 +1311,10 @@ const projects = [
     chem: 'norepinephrine',
     chemName: 'CORTISOL',
     project: 'Social Pilot',
-    desc: 'Autonomous behavioral agent. 49 tools that generate, score, and post content while modeling human psychology.',
+    desc: 'Autonomous behavioral agent. 56 tools, fine-tuned 7B LLM, 85 tests. Generates, scores, and posts content while modeling human psychology.',
     rx: 'SP-2026',
-    dose: '49 tools / 24-7',
-    tags: ['TypeScript', 'Python', 'OpenClaw'],
+    dose: '56 tools / 24-7',
+    tags: ['Python', 'Ollama', 'MCP'],
     url: 'https://github.com/melmarion/social-pilot',
     rotate: -1.8,
     hasCanvas: false
